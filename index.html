@@ -165,6 +165,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .cartbar .sum b { display: block; font-size: 18px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .cta { border: 0; border-radius: 12px; padding: 14px 22px; cursor: pointer; background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 16px; }
 .cta.wide { width: 100%; }
+#submit, #wa { letter-spacing: .06em; font-weight: 700; font-size: 17px; padding: 16px 22px; }
 .cta.ghost { background: var(--surface-2); color: var(--ink); }
 
 /* ── лист (корзина, оформление) ────────────────────────── */
@@ -202,6 +203,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .opt { display: flex; gap: 10px; align-items: center; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
 .opt input { accent-color: var(--accent); width: 18px; height: 18px; }
 .opt[data-on="1"] { border-color: var(--accent); background: var(--accent-soft); }
+.fine { font-size: 12.5px; color: var(--muted); text-align: center; margin: 10px 0 0; }
 .err { color: var(--gone); font-size: 13.5px; margin: -6px 0 10px; }
 
 .done { text-align: center; padding: 8px 0 4px; }
@@ -442,8 +444,9 @@ function drawForm() {
       SHOP.payments.map(([k, t]) => '<label class="opt" data-on="' + (form.payment === k ? 1 : 0) + '"><input type="radio" name="pay" value="' + k + '"' + (form.payment === k ? " checked" : "") + '><span>' + t + '</span></label>').join("") +
     '</div>' +
     '<p class="err" id="err" hidden></p>' +
-    '<div class="actions"><button class="cta wide" id="submit">Собрать заказ</button>' +
-    '<button class="cta wide ghost" id="back">Назад в корзину</button></div>';
+    '<div class="actions"><button class="cta wide" id="submit">ЗАКАЗАТЬ</button>' +
+    '<button class="cta wide ghost" id="back">Назад в корзину</button></div>' +
+    '<p class="fine">Откроется WhatsApp с готовым текстом заказа — останется нажать «отправить».</p>';
 
   const sync = (wrapId, key) => {
     const wrap = document.getElementById(wrapId);
@@ -470,7 +473,15 @@ function submit() {
   else if (form.address.length < 5) problem = "Уточните адрес: улица, дом и квартира.";
   if (problem) { err.textContent = problem; err.hidden = false; return; }
   err.hidden = true;
+  const link = waLink();
   openSheet("done");
+  // Открываем WhatsApp сразу — это нажатие пользователя, значит блокировщик не помешает.
+  const tab = window.open(link, "_blank");
+  if (!tab) window.location.href = link;
+}
+
+function waLink() {
+  return "https://wa.me/" + SHOP.wa + "?text=" + encodeURIComponent(orderText());
 }
 
 function orderText() {
@@ -496,11 +507,11 @@ function drawDone() {
     '<div class="done">' +
       '<div class="mark"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">' +
       '<path d="M5 13.5l5.5 5.5L21 8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>' +
-      '<h2>Осталось отправить</h2>' +
-      '<p>Нажмите кнопку — откроется чат аптеки с уже готовым текстом заказа. Отправьте сообщение, и фармацевт перезвонит для подтверждения.</p>' +
+      '<h2>Заказ собран</h2>' +
+      '<p>WhatsApp открывается с готовым текстом заказа — нажмите в нём «отправить». Если не открылся, нажмите кнопку ниже.</p>' +
       '<div class="order-text">' + text.replace(/</g, "&lt;") + '</div>' +
       '<div class="actions">' +
-        '<a class="cta" id="wa" target="_blank" rel="noopener">Отправить в WhatsApp</a>' +
+        '<a class="cta" id="wa" target="_blank" rel="noopener">ЗАКАЗАТЬ</a>' +
         '<a class="cta ghost" id="tg" target="_blank" rel="noopener">Открыть бота в Telegram</a>' +
         '<button class="cta ghost" id="copy">Скопировать текст заказа</button>' +
         '<button class="cta ghost" id="clear">Очистить корзину</button>' +
