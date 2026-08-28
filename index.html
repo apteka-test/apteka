@@ -12,6 +12,7 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'><rect width='34' height='34' rx='9' fill='%230E7A5F'/><path d='M14.2 8h5.6v6.2H26v5.6h-6.2V26h-5.6v-6.2H8v-5.6h6.2V8z' fill='white'/></svg>">
 <style>*{margin:0}</style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -244,7 +245,7 @@ footer.legal { padding: 28px 0 8px; font-size: 13px; color: var(--muted); }
 
 <main class="wrap">
   <div class="note">
-    <span>Заказ собирается здесь, а отправляется одним сообщением в WhatsApp аптеки — фармацевт перезвонит и подтвердит время доставки.</span>
+    <span id="note">Соберите заказ и нажмите ЗАКАЗАТЬ — аптека получит его вместе с вашим адресом и телефоном. Фармацевт перезвонит и подтвердит время доставки.</span>
   </div>
   <p class="count" id="count"></p>
   <div class="grid" id="grid"></div>
@@ -279,6 +280,14 @@ footer.legal { padding: 28px 0 8px; font-size: 13px; color: var(--muted); }
 const PRODUCTS = [{"id": "p101", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Парацетамол 500 мг, №20", "price": 45, "stock": 34, "desc": "Жаропонижающее и обезболивающее. Таблетки, 20 шт."}, {"id": "p102", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Ибупрофен 400 мг, №20", "price": 89, "stock": 28, "desc": "Снижает температуру и боль, действует до 8 часов."}, {"id": "p103", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Порошок от простуды лимон, №10", "price": 349, "stock": 0, "desc": "Горячий напиток, 10 пакетиков. Ожидаем поставку."}, {"id": "p104", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Спрей для носа Ксилен 0,1%, 10 мл", "price": 129, "stock": 12, "desc": "Сосудосуживающий, облегчает дыхание до 8 часов."}, {"id": "p105", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Аквалор Норм, спрей 125 мл", "price": 389, "stock": 9, "desc": "Морская вода для промывания носа взрослым."}, {"id": "p106", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Пастилки от боли в горле, №16", "price": 210, "stock": 3, "desc": "С мёдом и лимоном, смягчают горло."}, {"id": "p107", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Спрей для горла Гексорал, 40 мл", "price": 415, "stock": 7, "desc": "Антисептик, снимает боль и воспаление."}, {"id": "p108", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Сироп от кашля с подорожником, 100 мл", "price": 265, "stock": 11, "desc": "Отхаркивающее средство на травах."}, {"id": "p109", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Таблетки от кашля, №20", "price": 58, "stock": 22, "desc": "Классическое отхаркивающее, недорого."}, {"id": "p110", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Оксолиновая мазь 0,25%, 10 г", "price": 89, "stock": 19, "desc": "Для профилактики в сезон простуд."}, {"id": "p111", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Горчичники, №10", "price": 75, "stock": 16, "desc": "Согревающие, для взрослых и детей с 6 лет."}, {"id": "p112", "cat": "c0", "cat_title": "🤧 Простуда и грипп", "name": "Термометр электронный", "price": 320, "stock": 7, "desc": "Измерение за 30 секунд, звуковой сигнал, память."}, {"id": "p201", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Анальгин 500 мг, №10", "price": 38, "stock": 41, "desc": "Обезболивающее, таблетки 10 шт."}, {"id": "p202", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Цитрамон П, №10", "price": 42, "stock": 37, "desc": "От головной боли, с кофеином."}, {"id": "p203", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Нурофен Экспресс, №12", "price": 285, "stock": 14, "desc": "Капсулы, действует через 15 минут."}, {"id": "p204", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Спазган, №20", "price": 175, "stock": 10, "desc": "При спазмах и боли в животе."}, {"id": "p205", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Но-шпа 40 мг, №24", "price": 280, "stock": 13, "desc": "Снимает спазмы гладкой мускулатуры."}, {"id": "p206", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Пластырь перцовый, 10х18 см", "price": 45, "stock": 24, "desc": "Согревающий, при боли в спине и пояснице."}, {"id": "p207", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Гель для суставов с диклофенаком, 50 г", "price": 340, "stock": 8, "desc": "Обезболивающий и противовоспалительный."}, {"id": "p208", "cat": "c1", "cat_title": "💊 Боль и температура", "name": "Мазь согревающая, 30 г", "price": 255, "stock": 6, "desc": "При растяжениях и ушибах."}, {"id": "p301", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Витамин D3 2000 МЕ, №60", "price": 480, "stock": 21, "desc": "Иммунитет и кости, курс на 2 месяца."}, {"id": "p302", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Аскорбиновая кислота с глюкозой, №10", "price": 35, "stock": 60, "desc": "Витамин C, таблетки 10 шт."}, {"id": "p303", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Магний B6, №50", "price": 590, "stock": 14, "desc": "При стрессе, судорогах и утомляемости."}, {"id": "p304", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Омега-3 1000 мг, №60", "price": 750, "stock": 9, "desc": "Рыбий жир в капсулах, для сердца и сосудов."}, {"id": "p305", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Компливит, №60", "price": 420, "stock": 17, "desc": "Комплекс из 11 витаминов и 8 минералов."}, {"id": "p306", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Железо + витамин C, №30", "price": 520, "stock": 6, "desc": "При низком гемоглобине, мягкая форма железа."}, {"id": "p307", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Цинк 25 мг, №90", "price": 390, "stock": 12, "desc": "Для иммунитета, кожи и волос."}, {"id": "p308", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Фолиевая кислота 1 мг, №50", "price": 95, "stock": 20, "desc": "Рекомендуется при планировании беременности."}, {"id": "p309", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Кальций D3, №60", "price": 450, "stock": 11, "desc": "Для костей и зубов, жевательные таблетки."}, {"id": "p310", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Мелатонин 3 мг, №30", "price": 480, "stock": 5, "desc": "Помогает уснуть, без привыкания."}, {"id": "p311", "cat": "c2", "cat_title": "💊 Витамины и БАД", "name": "Экстракт валерианы, №50", "price": 110, "stock": 23, "desc": "Мягкое успокоительное растительного происхождения."}, {"id": "p401", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Нурофен для детей, сироп 100 мл", "price": 265, "stock": 11, "desc": "Клубничный вкус, с 3 месяцев."}, {"id": "p402", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Панадол детский, суспензия 100 мл", "price": 180, "stock": 9, "desc": "Жаропонижающее с 3 месяцев."}, {"id": "p403", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Аквалор Беби, спрей 125 мл", "price": 430, "stock": 8, "desc": "Морская вода для носика с рождения."}, {"id": "p404", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Витамишки Иммуно, №60", "price": 690, "stock": 5, "desc": "Жевательные пастилки, детям с 3 лет."}, {"id": "p405", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Подгузники 3 (4–9 кг), 58 шт.", "price": 1190, "stock": 4, "desc": "Дышащие, с индикатором наполнения."}, {"id": "p406", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Влажные салфетки детские, 72 шт.", "price": 125, "stock": 26, "desc": "Без спирта и отдушек."}, {"id": "p407", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Крем под подгузник, 75 мл", "price": 310, "stock": 7, "desc": "С пантенолом и цинком."}, {"id": "p408", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Термометр детский бесконтактный", "price": 1850, "stock": 2, "desc": "Измерение за 1 секунду, не будит ребёнка."}, {"id": "p409", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Соска-пустышка силиконовая, 0–6 мес", "price": 190, "stock": 13, "desc": "Ортодонтическая форма, 2 шт. в упаковке."}, {"id": "p410", "cat": "c3", "cat_title": "👶 Детские товары", "name": "Пакетики от коликов, №20", "price": 390, "stock": 6, "desc": "Фенхель и ромашка, с рождения."}, {"id": "p501", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Пластырь бактерицидный, №20", "price": 75, "stock": 33, "desc": "Водостойкий, разные размеры."}, {"id": "p502", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Бинт стерильный 5 м х 10 см", "price": 65, "stock": 29, "desc": "Марлевый, в индивидуальной упаковке."}, {"id": "p503", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Бинт эластичный 1,5 м", "price": 155, "stock": 15, "desc": "Средней растяжимости, многоразовый."}, {"id": "p504", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Перекись водорода 3%, 100 мл", "price": 35, "stock": 38, "desc": "Антисептик для обработки ран."}, {"id": "p505", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Хлоргексидин 0,05%, 100 мл", "price": 40, "stock": 35, "desc": "Обеззараживание ран и полости рта."}, {"id": "p506", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Зелёнка, карандаш", "price": 90, "stock": 12, "desc": "Не пачкает руки и одежду."}, {"id": "p507", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Вата стерильная, 100 г", "price": 95, "stock": 18, "desc": "Хирургическая, в рулоне."}, {"id": "p508", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Ножницы медицинские", "price": 210, "stock": 5, "desc": "Нержавеющая сталь, тупоконечные."}, {"id": "p509", "cat": "c4", "cat_title": "🩹 Первая помощь", "name": "Аптечка автомобильная", "price": 890, "stock": 4, "desc": "Соответствует приказу Минздрава."}, {"id": "p601", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Антисептик для рук, 100 мл", "price": 89, "stock": 40, "desc": "Спиртовой гель с глицерином, карманный формат."}, {"id": "p602", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Маски медицинские, 50 шт.", "price": 250, "stock": 25, "desc": "Трёхслойные, с носовым фиксатором."}, {"id": "p603", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Ватные диски, 100 шт.", "price": 65, "stock": 18, "desc": "Гипоаллергенные, 100% хлопок."}, {"id": "p604", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Ватные палочки, 200 шт.", "price": 55, "stock": 24, "desc": "В пластиковой банке с крышкой."}, {"id": "p605", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Шампунь от перхоти, 200 мл", "price": 390, "stock": 9, "desc": "С кетоконазолом, курс 4 недели."}, {"id": "p606", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Крем для рук с пантенолом, 75 мл", "price": 185, "stock": 14, "desc": "Восстанавливает сухую кожу."}, {"id": "p607", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Зубная паста для чувствительных зубов", "price": 270, "stock": 16, "desc": "Снижает чувствительность за 2 недели."}, {"id": "p608", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Гель для душа с ромашкой, 400 мл", "price": 230, "stock": 11, "desc": "Для чувствительной кожи."}, {"id": "p609", "cat": "c5", "cat_title": "🧴 Гигиена и уход", "name": "Мазь от мозолей, 25 г", "price": 175, "stock": 7, "desc": "Смягчает и заживляет."}, {"id": "p701", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Тонометр автоматический", "price": 2450, "stock": 3, "desc": "Манжета 22–42 см, память на 90 измерений."}, {"id": "p702", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Тонометр механический", "price": 1290, "stock": 2, "desc": "Со стетоскопом, для домашнего контроля."}, {"id": "p703", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Глюкометр с 10 полосками", "price": 1650, "stock": 3, "desc": "Результат за 5 секунд."}, {"id": "p704", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Тест-полоски для глюкометра, 50 шт.", "price": 980, "stock": 6, "desc": "Совместимы с популярными моделями."}, {"id": "p705", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Пульсоксиметр на палец", "price": 990, "stock": 4, "desc": "Сатурация и пульс за 10 секунд."}, {"id": "p706", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Ингалятор компрессорный", "price": 3200, "stock": 2, "desc": "Для детей и взрослых, 2 маски в комплекте."}, {"id": "p707", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Грелка резиновая, 2 л", "price": 290, "stock": 8, "desc": "Классическая, с плотной пробкой."}, {"id": "p708", "cat": "c6", "cat_title": "🩺 Медтехника", "name": "Перчатки нитриловые M, 100 шт.", "price": 690, "stock": 10, "desc": "Без талька, повышенной прочности."}, {"id": "p801", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Активированный уголь, №50", "price": 60, "stock": 44, "desc": "Сорбент, при отравлениях и вздутии."}, {"id": "p802", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Смекта, №10", "price": 220, "stock": 19, "desc": "При диарее, для детей и взрослых."}, {"id": "p803", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Мезим форте, №20", "price": 180, "stock": 21, "desc": "Ферменты при тяжести после еды."}, {"id": "p804", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Омепразол 20 мг, №30", "price": 115, "stock": 17, "desc": "При изжоге и повышенной кислотности."}, {"id": "p805", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Ренни, №24", "price": 290, "stock": 13, "desc": "Быстро снимает изжогу, вкус мяты."}, {"id": "p806", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Регидрон, №10", "price": 490, "stock": 8, "desc": "Восстановление водно-солевого баланса."}, {"id": "p807", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Пробиотик в капсулах, №30", "price": 620, "stock": 6, "desc": "После курса антибиотиков."}, {"id": "p808", "cat": "c7", "cat_title": "🍽 Желудок и пищеварение", "name": "Эспумизан, капли 30 мл", "price": 480, "stock": 5, "desc": "От колик и вздутия, с рождения."}];
 const CATS = [{"id": "c0", "title": "🤧 Простуда и грипп"}, {"id": "c1", "title": "💊 Боль и температура"}, {"id": "c2", "title": "💊 Витамины и БАД"}, {"id": "c3", "title": "👶 Детские товары"}, {"id": "c4", "title": "🩹 Первая помощь"}, {"id": "c5", "title": "🧴 Гигиена и уход"}, {"id": "c6", "title": "🩺 Медтехника"}, {"id": "c7", "title": "🍽 Желудок и пищеварение"}];
 const SHOP = {"name": "Аптека на связи", "delivery_fee": 150, "free_from": 1500, "slots": [["hour", "🚀 В течение часа"], ["today", "🌇 Сегодня вечером (18:00–21:00)"], ["tomorrow", "🌅 Завтра утром (9:00–12:00)"]], "payments": [["online", "💳 Картой онлайн"], ["cash", "💵 Наличными курьеру"]], "wa": "79030000142", "tg": "https://t.me/apteka_demo_bot"};
+
+/* Витрина работает в двух режимах:
+   — внутри Telegram (Mini App): ЗАКАЗАТЬ отправляет заказ боту, аптека получает его сразу;
+   — на обычном сайте: ЗАКАЗАТЬ показывает подтверждение (демонстрационный режим,
+     без серверной части отправить заказ боту из браузера нельзя). */
+const TG = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+const inTG = !!(TG && TG.initData && TG.initData.length > 0);
+if (TG) { try { TG.ready(); TG.expand(); } catch (e) {} }
 
 const money = v => new Intl.NumberFormat("ru-RU").format(v) + " ₽";
 const byId = id => PRODUCTS.find(p => p.id === id);
@@ -446,7 +455,7 @@ function drawForm() {
     '<p class="err" id="err" hidden></p>' +
     '<div class="actions"><button class="cta wide" id="submit">ЗАКАЗАТЬ</button>' +
     '<button class="cta wide ghost" id="back">Назад в корзину</button></div>' +
-    '<p class="fine">Откроется WhatsApp с готовым текстом заказа — останется нажать «отправить».</p>';
+    '<p class="fine">Одно нажатие — и заказ у аптеки. Отправлять ничего не нужно.</p>';
 
   const sync = (wrapId, key) => {
     const wrap = document.getElementById(wrapId);
@@ -473,15 +482,35 @@ function submit() {
   else if (form.address.length < 5) problem = "Уточните адрес: улица, дом и квартира.";
   if (problem) { err.textContent = problem; err.hidden = false; return; }
   err.hidden = true;
-  const link = waLink();
+
+  if (inTG) {                       // внутри Telegram отправляем заказ боту и закрываемся
+    const t = totals();
+    TG.sendData(JSON.stringify({
+      items: t.items.map(i => ({ id: i.p.id, qty: i.qty })),
+      name: form.name, phone: form.phone, address: form.address,
+      slot: form.slot, payment: form.payment
+    }));
+    cart = {}; save();
+    TG.close();
+    return;
+  }
+
+  // На сайте (вне Telegram) заказ подтверждается на месте — демонстрационный режим.
+  lastOrder = { no: nextNo(), text: orderText(), total: totals().total, phone: form.phone };
+  cart = {};
+  save();
+  render();
   openSheet("done");
-  // Открываем WhatsApp сразу — это нажатие пользователя, значит блокировщик не помешает.
-  const tab = window.open(link, "_blank");
-  if (!tab) window.location.href = link;
 }
 
-function waLink() {
-  return "https://wa.me/" + SHOP.wa + "?text=" + encodeURIComponent(orderText());
+let lastOrder = null;
+
+function nextNo() {
+  let no = 1000;
+  try { no = parseInt(localStorage.getItem("apteka_no") || "1000", 10); } catch (e) {}
+  no += 1;
+  try { localStorage.setItem("apteka_no", String(no)); } catch (e) {}
+  return no;
 }
 
 function orderText() {
@@ -501,35 +530,24 @@ function orderText() {
 }
 
 function drawDone() {
-  const text = orderText();
-  title.textContent = "Заказ готов";
+  const o = lastOrder || { no: 0, text: "", total: 0, phone: "" };
+  title.textContent = "Заказ принят";
   body.innerHTML =
     '<div class="done">' +
       '<div class="mark"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">' +
       '<path d="M5 13.5l5.5 5.5L21 8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>' +
-      '<h2>Заказ собран</h2>' +
-      '<p>WhatsApp открывается с готовым текстом заказа — нажмите в нём «отправить». Если не открылся, нажмите кнопку ниже.</p>' +
-      '<div class="order-text">' + text.replace(/</g, "&lt;") + '</div>' +
-      '<div class="actions">' +
-        '<a class="cta" id="wa" target="_blank" rel="noopener">ЗАКАЗАТЬ</a>' +
-        '<a class="cta ghost" id="tg" target="_blank" rel="noopener">Открыть бота в Telegram</a>' +
-        '<button class="cta ghost" id="copy">Скопировать текст заказа</button>' +
-        '<button class="cta ghost" id="clear">Очистить корзину</button>' +
-      '</div>' +
+      '<h2>Заказ №' + o.no + ' принят</h2>' +
+      '<p>Аптека собирает заказ на ' + money(o.total) + '. Фармацевт позвонит на ' + o.phone +
+      ', чтобы подтвердить время доставки.</p>' +
+      '<div class="order-text">' + o.text.replace(/</g, "&lt;") + '</div>' +
+      '<div class="actions"><button class="cta wide" id="ok">Хорошо</button></div>' +
     '</div>';
-  document.getElementById("wa").href = "https://wa.me/" + SHOP.wa + "?text=" + encodeURIComponent(text);
-  document.getElementById("tg").href = SHOP.tg;
-  document.getElementById("copy").onclick = async (e) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      e.target.textContent = "Скопировано";
-    } catch (err) {
-      e.target.textContent = "Выделите текст выше и скопируйте";
-    }
-  };
-  document.getElementById("clear").onclick = () => {
-    cart = {}; save(); render(); closeSheet();
-  };
+  document.getElementById("ok").onclick = closeSheet;
+}
+
+if (inTG) {
+  document.getElementById("note").textContent =
+    "Соберите заказ и нажмите ЗАКАЗАТЬ — он сразу уйдёт в аптеку, отправлять ничего не нужно.";
 }
 
 document.getElementById("q").addEventListener("input", e => {
